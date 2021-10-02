@@ -1,6 +1,7 @@
 #ifndef VEC3_H
 #define VEC3_H
 
+#include "random.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -14,6 +15,14 @@ public:
   double x() const { return e[0]; }
   double y() const { return e[1]; }
   double z() const { return e[2]; }
+  inline static vec3 random() {
+    return vec3(random_double(), random_double(), random_double());
+  }
+
+  inline static vec3 random(double min, double max) {
+    return vec3(random_double(min, max), random_double(min, max),
+                random_double(min, max));
+  }
 
   vec3 &operator+=(const vec3 &v) {
     e[0] += v.e[0];
