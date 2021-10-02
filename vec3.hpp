@@ -14,13 +14,11 @@ public:
   double y() const { return e[1]; }
   double z() const { return e[2]; }
 
-	double length() const {
-		return sqrt(length_squared());
-	}
+  double length() const { return sqrt(length_squared()); }
 
-	double length_squared() const {
-		return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
-	}
+  double length_squared() const {
+    return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
+  }
 
 public:
   double e[3];
@@ -37,10 +35,11 @@ inline vec3 operator*(double t, vec3 v) {
 
 inline vec3 operator*(vec3 v, double t) { return t * v; }
 inline vec3 operator/(vec3 v, double t) { return (1 / t) * v; }
-
-inline vec3 unit_vector(vec3 v) {
-	return v / v.length();
+inline double dot(const vec3 &u, const vec3 &v) {
+  return u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2];
 }
+
+inline vec3 unit_vector(vec3 v) { return v / v.length(); }
 
 using point3 = vec3;
 using color = vec3;

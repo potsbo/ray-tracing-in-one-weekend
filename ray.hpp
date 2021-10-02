@@ -9,6 +9,7 @@ public:
       : orig(origin), dir(direction) {}
 
 	vec3 direction() const { return dir; }
+	vec3 origin() const { return orig; }
 
 public:
   point3 orig;
