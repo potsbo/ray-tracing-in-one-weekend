@@ -2,6 +2,10 @@
 open: image.ppm
 	open $<
 
+.PHONY: clean
+clean:
+	rm image.ppm raytracing
+
 image.ppm: raytracing
 	./$< > $@
 
