@@ -4,7 +4,9 @@
 
 color ray_color(const ray &r) {
   vec3 unit_direction = unit_vector(r.direction());
+  // 0.0 <= t <= 1.0, because -1.0 <= unit_direction.y() <= 1.0
   auto t = 0.5 * (unit_direction.y() + 1.0);
+  // blend white and blue
   return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
 }
 
