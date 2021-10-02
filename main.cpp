@@ -4,19 +4,6 @@
 #include "sphere.hpp"
 #include <iostream>
 
-double hit_shpere(const point3 &center, double radius, const ray &r) {
-  vec3 oc = r.origin() - center;
-  auto a = dot(r.direction(), r.direction());
-  auto half_b = dot(oc, r.direction());
-  auto c = oc.length_squared() - radius * radius;
-  auto discriminat = half_b * half_b - a * c;
-  if (discriminat < 0) {
-    return -1.0;
-  } else {
-    return (-half_b - sqrt(discriminat)) / a;
-  }
-}
-
 color ray_color(const ray &r, const hittable &world) {
   hit_record rec;
   if (world.hit(r, 0, infinity, rec)) {
