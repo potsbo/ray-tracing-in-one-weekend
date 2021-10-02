@@ -16,5 +16,6 @@ public:
   double e[3];
 };
 
+using point3 = vec3;
 using color = vec3;
 #endif
