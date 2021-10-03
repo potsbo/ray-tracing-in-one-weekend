@@ -5,7 +5,7 @@ OBJECTS = $(SOURCES:%.cpp=%.o)
 PROGRAM = $(shell basename `pwd`)
 
 CC := clang++
-CFLAGS := -std=c++14 -Wall
+CFLAGS := -std=c++14 -Wall -O3
 
 $(PROGRAM): $(OBJECTS)
 	$(CC) -o $@ $<
