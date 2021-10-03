@@ -49,7 +49,9 @@ public:
 inline vec3 operator+(vec3 v1, vec3 v2) {
   return vec3(v1.x() + v2.x(), v1.y() + v2.y(), v1.z() + v2.z());
 }
-inline vec3 operator-(vec3 v1, vec3 v2) { return v1 + (-v2); }
+inline vec3 operator-(vec3 v1, vec3 v2) {
+  return vec3(v1.e[0] - v2.e[0], v1.e[1] - v2.e[1], v1.e[2] - v2.e[2]);
+}
 
 inline vec3 operator*(const vec3 &u, const vec3 &v) {
   return vec3(u.e[0] * v.e[0], u.e[1] * v.e[1], u.e[2] * v.e[2]);
