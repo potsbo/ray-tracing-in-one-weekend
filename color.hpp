@@ -2,8 +2,8 @@
 #define COLOR_H
 
 #include "vec3.hpp"
-
 #include <iostream>
+
 inline double clamp(double x, double min, double max) {
   if (x < min)
     return min;

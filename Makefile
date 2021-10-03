@@ -5,10 +5,10 @@ OBJECTS = $(SOURCES:%.cpp=%.o)
 PROGRAM = $(shell basename `pwd`)
 
 CC := clang++
-CFLAGS := -std=c++14 -Wall -O3
+CFLAGS := -std=c++14 -Wall -O3 -pthread
 
 $(PROGRAM): $(OBJECTS)
-	$(CC) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $<
 
 %.o: %.cpp $(HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<
