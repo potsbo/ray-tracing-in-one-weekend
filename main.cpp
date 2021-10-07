@@ -1,6 +1,7 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "hittable_list.hpp"
+#include "image.hpp"
 #include "material.hpp"
 #include "rtweekend.hpp"
 #include "sphere.hpp"
@@ -76,11 +77,36 @@ hittable_list random_scene() {
   return world;
 }
 
+std::vector<int> split(int total, int ngroups) {
+  std::vector<int> ret;
+  if (total < ngroups) {
+    return ret;
+  }
+
+  if (total % ngroups == 0) {
+    for (int i = 0; i < ngroups; i++) {
+      ret.push_back(total / ngroups);
+    }
+    return ret;
+  }
+
+  int extras = total % ngroups;
+  int per_group = total / ngroups;
+  for (int i = 0; i < ngroups; i++) {
+    if (i < extras) {
+      ret.push_back(per_group + 1);
+    } else {
+      ret.push_back(per_group);
+    }
+  }
+  return ret;
+}
+
 int main() {
   // Image
 
   const auto aspect_ratio = 3.0 / 2.0;
-  const int image_width = 1200;
+  const int image_width = 120;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
   const int samples_per_pixel = 500;
   const int max_depth = 50;
@@ -102,50 +128,42 @@ int main() {
   // Render
   auto cores = 8;
   std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-  auto func = [cam, world, image_height](int j) {
-    std::ostringstream sstr;
+  auto func = [cam, world, image_height](int samples) {
+    std::vector<color> pixels;
+    for (int j = image_height - 1; j >= 0; --j) {
+      for (int i = 0; i < image_width; ++i) {
+        color pixel_color(0, 0, 0);
+        for (int s = 0; s < samples; ++s) {
+          auto u = (i + random_double()) / (image_width - 1);
+          auto v = (j + random_double()) / (image_height - 1);
 
-    for (int i = 0; i < image_width; ++i) {
-      color pixel_color(0, 0, 0);
-      for (int s = 0; s < samples_per_pixel; ++s) {
-        auto u = (i + random_double()) / (image_width - 1);
-        auto v = (j + random_double()) / (image_height - 1);
+          ray r = cam.get_ray(u, v);
+          pixel_color += ray_color(r, world, max_depth);
+        }
 
-        ray r = cam.get_ray(u, v);
-        pixel_color += ray_color(r, world, max_depth);
+        pixels.push_back(pixel_color);
       }
-
-      write_color(sstr, pixel_color, samples_per_pixel);
     }
-
-    return sstr.str();
+    return pixels;
   };
 
-  std::vector<std::future<std::string>> v;
-  const auto per = image_height / cores;
+  std::vector<std::future<image>> v;
 
-  std::cerr << "per: " << per << "\n";
-  for (int j = image_height - 1; j >= 0; j -= per) {
-    // process i to
-    v.push_back(std::async([j, func, per] {
-      std::string ret;
-      auto limit = 0 > (j - per) ? 0 : (j - per);
-      std::cerr << "processing: " << j << " to " << limit << "\n";
-
-      for (int i = j; i >= limit; --i) {
-        std::string str;
-        auto res = func(i);
-        ret += res;
-        std::cerr << "done: " << i << "\n";
-      }
-
-      return ret;
+  auto samples = split(samples_per_pixel, cores);
+  for (auto sample : samples) {
+    std::cerr << "processing samples: " << sample << "\n";
+    v.push_back(std::async([image_height, func, sample] {
+      return image(image_height, image_width, func(sample), sample);
     }));
   }
 
+  image merged(image_height, image_width);
+
   for (auto &val : v) {
-    std::cout << val.get() << std::endl;
+    merged += val.get();
   }
+
+  write_colors(std::cout, merged);
 
   std::cerr << "\nDone.\n";
 }
